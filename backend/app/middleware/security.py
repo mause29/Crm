@@ -19,7 +19,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, requests_per_minute: int = 60, exclude_paths: List[str] = None):
         super().__init__(app)
         self.requests_per_minute = requests_per_minute
-        self.exclude_paths = exclude_paths or ["/docs", "/redoc", "/openapi.json"]
+        self.exclude_paths = exclude_paths or ["/redoc", "/openapi.json"]
         self.requests = defaultdict(list)
 
     async def dispatch(self, request: Request, call_next):
