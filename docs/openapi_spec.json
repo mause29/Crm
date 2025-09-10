@@ -1,0 +1,609 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CRM Completo con PayPal y ML",
+    "description": "# Sistema Completo de CRM con Gamificación\n\nUn sistema avanzado de gestión de relaciones con clientes que incluye:\n\n## 🚀 Características Principales\n\n### Gestión de Clientes y Ventas\n- **Clientes**: Gestión completa de base de datos de clientes\n- **Oportunidades**: Seguimiento de oportunidades de venta\n- **Facturas**: Generación y gestión de facturas con PayPal\n\n### Gamificación y Motivación\n- **Logros**: Sistema de badges y puntos para motivar a los usuarios\n- **Notificaciones**: Alertas en tiempo real vía Socket.IO\n- **Dashboard**: Métricas y reportes visuales\n\n### Seguridad y Autenticación\n- **JWT**: Autenticación segura con tokens\n- **2FA**: Autenticación de dos factores opcional\n- **Roles**: Control de acceso basado en roles (user, manager, admin)\n\n### Integraciones\n- **PayPal**: Procesamiento de pagos\n- **Email**: Automatización de correos\n- **Analytics**: Análisis de datos y machine learning básico\n\n## 📚 Documentación de la API\n\nEsta API está documentada usando OpenAPI 3.0.\n\n### Autenticación\nLa mayoría de los endpoints requieren autenticación JWT. Incluye el token en el header:\n```\nAuthorization: Bearer <tu_token>\n```\n\n### Ejemplos de Uso\nConsulta los ejemplos en cada endpoint para entender cómo usar la API.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "CRM Support",
+      "email": "support@crm.com"
+    },
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Development server"
+    },
+    {
+      "url": "https://api.crm.com",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "UserCreate": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Nombre completo del usuario",
+            "example": "Juan Pérez"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Correo electrónico único del usuario",
+            "example": "juan.perez@empresa.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "Contraseña segura (mínimo 8 caracteres, con mayúsculas, minúsculas y dígitos)",
+            "example": "SecurePass123"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["user", "admin", "manager"],
+            "default": "user",
+            "description": "Rol del usuario en el sistema",
+            "example": "user"
+          },
+          "company_id": {
+            "type": "integer",
+            "description": "ID de la compañía (opcional para usuarios independientes)",
+            "example": 1
+          }
+        }
+      },
+      "ClientCreate": {
+        "type": "object",
+        "required": ["name", "email", "phone"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Nombre completo del cliente",
+            "example": "María García"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Correo electrónico del cliente",
+            "example": "maria.garcia@cliente.com"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[\\d\\s\\-\\(\\)\\[\\]]+$",
+            "description": "Número de teléfono del cliente",
+            "example": "+34 612 345 678"
+          }
+        }
+      },
+      "OpportunityCreate": {
+        "type": "object",
+        "required": ["name", "value", "client_id"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200,
+            "description": "Nombre descriptivo de la oportunidad",
+            "example": "Proyecto Desarrollo Web"
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Valor monetario de la oportunidad",
+            "example": 15000.50
+          },
+          "client_id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "ID del cliente asociado",
+            "example": 1
+          }
+        }
+      },
+      "InvoiceCreate": {
+        "type": "object",
+        "required": ["client_id", "amount"],
+        "properties": {
+          "client_id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "ID del cliente facturado",
+            "example": 1
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monto total de la factura",
+            "example": 2500.75
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de vencimiento (formato YYYY-MM-DD)",
+            "example": "2024-12-31"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/users/": {
+      "post": {
+        "summary": "Crear nuevo usuario",
+        "description": "Crea una nueva cuenta de usuario en el sistema.\n\n**Validaciones realizadas:**\n- Email único en el sistema\n- Contraseña segura (8+ caracteres, mayúsculas, minúsculas, dígitos)\n- Rol válido (user, admin, manager)\n\n**Permisos:** Público (no requiere autenticación)\n\n**Respuesta exitosa:**\n- Código 200: Usuario creado exitosamente\n- Retorna ID del usuario creado\n\n**Posibles errores:**\n- 400: Email ya registrado o datos inválidos\n- 500: Error interno del servidor",
+        "tags": ["users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario creado exitosamente",
+            "content": {
+              "application/json": {
+                "example": {
+                  "msg": "User created successfully",
+                  "user_id": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos o email ya registrado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Email already registered"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/token": {
+      "post": {
+        "summary": "Iniciar sesión",
+        "description": "Autentica al usuario y retorna un token de acceso JWT",
+        "tags": ["users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Correo electrónico del usuario",
+                    "example": "juan.perez@empresa.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Contraseña del usuario",
+                    "example": "SecurePass123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso",
+            "content": {
+              "application/json": {
+                "example": {
+                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                  "token_type": "bearer"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Invalid email or password"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/": {
+      "get": {
+        "summary": "Obtener lista de clientes",
+        "description": "Recupera la lista completa de clientes asociados a la compañía del usuario autenticado.\n\n**Características:**\n- Solo muestra clientes de la misma compañía\n- Requiere autenticación JWT\n- Ordena por fecha de creación (más recientes primero)\n\n**Permisos:** Usuario autenticado\n\n**Respuesta exitosa:**\n- Código 200: Lista de clientes devuelta exitosamente\n- Retorna array de objetos cliente con información básica\n\n**Posibles errores:**\n- 401: No autorizado (token inválido o faltante)\n- 500: Error interno del servidor",
+        "tags": ["clients"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Lista de clientes obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 1,
+                    "name": "María García",
+                    "email": "maria.garcia@cliente.com",
+                    "phone": "+34 612 345 678",
+                    "created_at": "2024-01-15T10:30:00Z"
+                  },
+                  {
+                    "id": 2,
+                    "name": "Carlos Rodríguez",
+                    "email": "carlos.rodriguez@empresa.com",
+                    "phone": "+34 698 765 432",
+                    "created_at": "2024-01-10T14:20:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Not authenticated"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Crear nuevo cliente",
+        "description": "Crea un nuevo cliente asociado a la compañía del usuario autenticado.\n\n**Validaciones:**\n- Email único en la base de datos\n- Requiere autenticación JWT\n\n**Permisos:** Usuario autenticado\n\n**Respuesta exitosa:**\n- Código 200: Cliente creado exitosamente\n- Retorna ID del cliente creado\n\n**Posibles errores:**\n- 400: Email ya registrado o datos inválidos\n- 500: Error interno del servidor",
+        "tags": ["clients"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "phone"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nombre del cliente",
+                    "example": "María García"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email del cliente",
+                    "example": "maria.garcia@cliente.com"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "description": "Teléfono del cliente",
+                    "example": "+34 612 345 678"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente creado exitosamente",
+            "content": {
+              "application/json": {
+                "example": {
+                  "msg": "Client created",
+                  "client_id": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos o email ya registrado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Client with this email already exists"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/opportunities/": {
+      "get": {
+        "summary": "Obtener lista de oportunidades",
+        "description": "Recupera la lista completa de oportunidades de venta.\n\n**Características:**\n- Muestra todas las oportunidades disponibles\n- Requiere autenticación JWT\n- Incluye información detallada de cada oportunidad\n\n**Permisos:** Usuario autenticado\n\n**Respuesta exitosa:**\n- Código 200: Lista de oportunidades devuelta exitosamente\n- Retorna array de objetos oportunidad\n\n**Posibles errores:**\n- 401: No autorizado (token inválido o faltante)\n- 500: Error interno del servidor",
+        "tags": ["opportunities"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Lista de oportunidades obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": 1,
+                    "name": "Proyecto Desarrollo Web",
+                    "value": 15000.50,
+                    "client_id": 1,
+                    "created_at": "2024-01-15T10:30:00Z",
+                    "status": "active"
+                  },
+                  {
+                    "id": 2,
+                    "name": "Consultoría Digital",
+                    "value": 8500.00,
+                    "client_id": 2,
+                    "created_at": "2024-01-10T14:20:00Z",
+                    "status": "active"
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Not authenticated"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Crear nueva oportunidad",
+        "description": "Crea una nueva oportunidad de venta asociada a un cliente existente.\n\n**Validaciones realizadas:**\n- Cliente debe existir en la base de datos\n- Valor debe ser mayor a cero\n- Requiere autenticación JWT\n\n**Permisos:** Usuario autenticado\n\n**Respuesta exitosa:**\n- Código 200: Oportunidad creada exitosamente\n- Retorna mensaje de confirmación\n\n**Posibles errores:**\n- 400: Datos inválidos o cliente no encontrado\n- 401: No autorizado (token inválido o faltante)\n- 500: Error interno del servidor",
+        "tags": ["opportunities"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpportunityCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Oportunidad creada exitosamente",
+            "content": {
+              "application/json": {
+                "example": {
+                  "msg": "Opportunity created"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos o cliente no encontrado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Client not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invoices/": {
+      "post": {
+        "summary": "Crear nueva factura",
+        "description": "Crea una nueva factura asociada a un cliente existente.\n\n**Validaciones realizadas:**\n- Cliente debe existir en la base de datos\n- Monto debe ser mayor a cero\n- Requiere autenticación JWT\n\n**Permisos:** Usuario autenticado\n\n**Respuesta exitosa:**\n- Código 200: Factura creada exitosamente\n- Retorna mensaje de confirmación\n\n**Posibles errores:**\n- 400: Datos inválidos o cliente no encontrado\n- 401: No autorizado (token inválido o faltante)\n- 500: Error interno del servidor",
+        "tags": ["invoices"],
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Factura creada exitosamente",
+            "content": {
+              "application/json": {
+                "example": {
+                  "msg": "Invoice created"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos o cliente no encontrado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Client not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invoices/pay/{invoice_id}": {
+      "post": {
+        "summary": "Procesar pago de factura",
+        "description": "Procesa el pago de una factura existente utilizando PayPal.\n\n**Características:**\n- Utiliza integración directa con PayPal\n- Procesa pagos con tarjeta de crédito sin login\n- Actualiza el estado de la factura a \"paid\" tras pago exitoso\n- Requiere autenticación JWT\n\n**Permisos:** Usuario autenticado\n\n**Respuesta exitosa:**\n- Código 200: Pago procesado exitosamente\n- Retorna mensaje de confirmación\n\n**Posibles errores:**\n- 400: Error en el procesamiento del pago\n- 401: No autorizado (token inválido o faltante)\n- 404: Factura no encontrada\n- 500: Error interno del servidor",
+        "tags": ["invoices"],
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "ID de la factura a pagar",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pago procesado exitosamente",
+            "content": {
+              "application/json": {
+                "example": {
+                  "msg": "Invoice paid"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en el procesamiento del pago",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Payment error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Factura no encontrada",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Invoice not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Verificación de salud del sistema",
+        "description": "Endpoint de verificación de salud del sistema.\n\n**Respuesta:**\n- status: Estado del sistema\n- timestamp: Timestamp de la verificación\n- version: Versión de la API",
+        "tags": ["health"],
+        "responses": {
+          "200": {
+            "description": "Sistema funcionando correctamente",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "healthy",
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "version": "1.0.0",
+                  "performance": {
+                    "cpu_percent": 15.2,
+                    "memory_percent": 45.8,
+                    "disk_usage": 234567890
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/performance/stats": {
+      "get": {
+        "summary": "Estadísticas de rendimiento",
+        "description": "Obtiene estadísticas de rendimiento del sistema.\n\n**Permisos:** Solo administradores\n\n**Respuesta:**\n- system: Estadísticas del sistema (CPU, memoria, disco)\n- endpoints: Estadísticas de rendimiento por endpoint",
+        "tags": ["performance"],
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Estadísticas obtenidas exitosamente",
+            "content": {
+              "application/json": {
+                "example": {
+                  "system": {
+                    "cpu_percent": 15.2,
+                    "memory_percent": 45.8,
+                    "disk_usage": 234567890
+                  },
+                  "endpoints": {
+                    "/users/": {
+                      "avg_response_time": 0.234,
+                      "total_requests": 1250,
+                      "error_rate": 0.02
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "users",
+      "description": "Operaciones relacionadas con usuarios y autenticación"
+    },
+    {
+      "name": "clients",
+      "description": "Gestión de clientes"
+    },
+    {
+      "name": "opportunities",
+      "description": "Gestión de oportunidades de venta"
+    },
+    {
+      "name": "invoices",
+      "description": "Gestión de facturas y pagos"
+    },
+    {
+      "name": "health",
+      "description": "Verificación de estado del sistema"
+    },
+    {
+      "name": "performance",
+      "description": "Monitoreo y estadísticas de rendimiento"
+    }
+  ]
+}

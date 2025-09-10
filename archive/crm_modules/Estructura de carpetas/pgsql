@@ -1,0 +1,20 @@
+crm_project/
+├─ app/
+│  ├─ main.py
+│  ├─ models.py
+│  ├─ schemas.py
+│  ├─ database.py
+│  ├─ auth.py
+│  ├─ crud.py
+│  ├─ routes/
+│  │   ├─ users.py
+│  │   ├─ clients.py
+│  │   ├─ opportunities.py
+│  │   ├─ tasks.py
+│  │   ├─ invoices.py
+│  │   └─ reports.py
+│  ├─ utils/
+│  │   ├─ security.py
+│  │   ├─ paypal.py
+│  │   └─ email_sender.py
+└─ requirements.txt

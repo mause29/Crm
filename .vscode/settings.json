@@ -1,0 +1,10 @@
+{
+    "terminal.integrated.sendKeybindingsToShell": true,
+    "powershell.buttons.showPanelMovementButtons": true,
+    "powershell.sideBar.CommandExplorerVisibility": true,
+    "powershell.suppressAdditionalExeNotFoundWarning": true,
+    "powershell.codeFormatting.autoCorrectAliases": true,
+    "powershell.codeFormatting.avoidSemicolonsAsLineTerminators": true,
+    "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+    "powershell.codeFormatting.useConstantStrings": true
+}

@@ -1,0 +1,36 @@
+crm-project/
+├── backend/
+│   ├── package.json
+│   ├── server.js
+│   ├── config/
+│   │   ├── db.js
+│   │   ├── auth.js
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Client.js
+│   │   ├── Invoice.js
+│   │   ├── Task.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── clients.js
+│   │   ├── invoices.js
+│   │   ├── tasks.js
+│   └── middleware/
+│       ├── auth.js
+│       ├── security.js
+├── frontend/
+│   ├── package.json
+│   ├── src/
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   ├── components/
+│   │   │   ├── Dashboard.js
+│   │   │   ├── Login.js
+│   │   │   ├── ClientList.js
+│   │   │   ├── InvoiceList.js
+│   │   │   ├── TaskBoard.js
+│   │   └── services/
+│   │       ├── api.js
+│   │       ├── paypal.js
+├── docker-compose.yml
+├── README.md

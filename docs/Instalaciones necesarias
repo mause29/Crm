@@ -1,0 +1,5 @@
+pip install django djangorestframework djangorestframework-simplejwt django-cors-headers
+pip install django-allauth  # Para SSO (Google/Microsoft)
+pip install drf-yasg        # Para documentación API
+pip install celery redis    # Para automatizaciones
+pip install stripe paypalrestsdk  # Facturación y pagos

@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+alembic
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+paypalrestsdk
+pydantic[email]
+python-decouple
+python-socketio
+pyotp
+schedule

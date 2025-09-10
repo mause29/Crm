@@ -1,0 +1,38 @@
+crm-python/
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py                  # Punto de entrada FastAPI
+│   │   ├── config.py                # Configuración del proyecto y DB
+│   │   ├── models/
+│   │   │   ├── user.py
+│   │   │   ├── role.py
+│   │   │   ├── client.py
+│   │   │   ├── opportunity.py
+│   │   │   └── task.py
+│   │   ├── schemas/                 # Validación de datos (Pydantic)
+│   │   ├── routes/
+│   │   │   ├── auth.py
+│   │   │   ├── users.py
+│   │   │   ├── clients.py
+│   │   │   ├── opportunities.py
+│   │   │   └── tasks.py
+│   │   └── services/                # Lógica de negocio
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── index.jsx
+│   │   ├── pages/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Clients.jsx
+│   │   │   ├── Opportunities.jsx
+│   │   │   └── Tasks.jsx
+│   │   └── components/              # Navbar, Sidebar, Widgets
+│   ├── package.json
+│   └── Dockerfile
+│
+└── docker-compose.yml

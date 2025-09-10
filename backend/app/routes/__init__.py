@@ -1,0 +1,12 @@
+from .users import router as users
+from .clientes import router as clientes
+from .oportunidades import router as oportunidades
+from .facturas import router as facturas
+from .notifications import router as notifications
+from .filtering import router as filtering
+from .gamification import router as gamification
+from .reports import router as reports
+from .dashboard import router as dashboard
+from .email import router as email
+from .tasks import router as tasks
+from .analytics import router as analytics

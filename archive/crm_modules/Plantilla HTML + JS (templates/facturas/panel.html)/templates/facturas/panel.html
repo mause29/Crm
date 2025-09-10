@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Facturas</title>
+    <script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID&currency=USD"></script>
+</head>
+<body>
+    <h1>Facturas</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Acción</th>
+        </tr>
+        {% for factura in facturas %}
+        <tr>
+            <td>{{ factura.id }}</td>
+            <td>{{ factura.cliente.nombre }}</td>
+            <td>{{ factura.monto }}</td>
+            <td id="estado-{{ factura.id }}">{{ factura.estado }}</td>
+            <td>
+                {% if factura.estado != "PAGADO" %}
+                <div id="paypal-button-container-{{ factura.id }}"></div>
+                <script>
+                    paypal.Buttons({
+                        createOrder: function(data, actions) {
+                            return fetch("/factura/{{ factura.id }}/orden/")
+                                .then(response => response.json())
+                                .then(order => order.paypal_order_id);
+                        },
+                        onApprove: function(data, actions) {
+                            return fetch("/factura/{{ factura.id }}/capturar/")
+                                .then(response => response.json())
+                                .then(result => {
+                                    if(result.status === "PAGADO") {
+                                        document.getElementById("estado-{{ factura.id }}").innerText = "PAGADO";
+                                        alert("Pago completado");
+                                    } else {
+                                        alert("Pago fallido");
+                                    }
+                                });
+                        }
+                    }).render("#paypal-button-container-{{ factura.id }}");
+                </script>
+                {% else %}
+                Pagado
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

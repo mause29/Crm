@@ -1,0 +1,4 @@
+pip install django djangorestframework djangorestframework-simplejwt
+django-admin startproject mycrm
+cd mycrm
+python manage.py startapp crm

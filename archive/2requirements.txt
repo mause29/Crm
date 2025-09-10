@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+python-jose[cryptography]
+passlib[bcrypt]
+pyotp
+cryptography
+paypalrestsdk
+httpx
+jinja2
+APScheduler
+python-multipart
+python-dotenv
+python-decouple

@@ -1,0 +1,36 @@
+crm_project/
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   ├── database.py
+│   │   ├── auth.py
+│   │   ├── routes/
+│   │   │   ├── users.py
+│   │   │   ├── clients.py
+│   │   │   ├── opportunities.py
+│   │   │   ├── tasks.py
+│   │   │   ├── invoices.py
+│   │   │   └── analytics.py
+│   │   └── utils/
+│   │       ├── security.py
+│   │       ├── paypal.py
+│   │       ├── email_service.py
+│   │       └── notifications.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── dashboard/
+│   │   ├── index.html
+│   │   ├── main.js
+│   │   └── styles.css
+│   └── components/
+│       ├── kanban.js
+│       ├── charts.js
+│       └── modals.js
+│
+├── docker-compose.yml
+├── .env
+└── README.md

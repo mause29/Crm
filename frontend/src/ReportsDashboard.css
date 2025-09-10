@@ -1,0 +1,573 @@
+.reports-dashboard {
+  padding: 20px;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.reports-header {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.reports-header h1 {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+  font-size: 2rem;
+}
+
+.reports-tabs {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.reports-tabs button {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #657786;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.reports-tabs button:hover {
+  color: #1da1f2;
+}
+
+.reports-tabs button.active {
+  color: #1da1f2;
+  border-bottom-color: #1da1f2;
+}
+
+.reports-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #657786;
+  font-size: 16px;
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #fcc;
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 40px;
+  color: #1da1f2;
+}
+
+/* Overview Tab */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.metric-card {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #1da1f2;
+}
+
+.metric-card h3 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.metric-change {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.metric-change.positive {
+  color: #27ae60;
+}
+
+.metric-change.negative {
+  color: #e74c3c;
+}
+
+.top-performers {
+  grid-column: span 2;
+}
+
+.top-performers h3 {
+  margin-bottom: 15px;
+}
+
+.performers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.performer-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+}
+
+.performer-name {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.performer-sales {
+  color: #1da1f2;
+  font-weight: bold;
+}
+
+/* Sales Tab */
+.sales-reports {
+  display: grid;
+  gap: 30px;
+}
+
+.chart-container {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.chart-container h3 {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+}
+
+.sales-chart {
+  display: flex;
+  align-items: end;
+  gap: 15px;
+  height: 200px;
+  padding: 20px 0;
+}
+
+.chart-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.bar-label {
+  font-size: 12px;
+  color: #657786;
+  margin-bottom: 10px;
+}
+
+.bar {
+  background: linear-gradient(180deg, #1da1f2, #0d8ecf);
+  border-radius: 4px 4px 0 0;
+  min-height: 20px;
+  width: 100%;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.bar-subtext {
+  font-size: 10px;
+  color: #657786;
+  margin-top: 5px;
+}
+
+.conversion-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.conversion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+}
+
+.period {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.opportunities {
+  color: #657786;
+}
+
+.conversion-rate {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+/* Tasks Tab */
+.tasks-reports {
+  display: grid;
+  gap: 30px;
+}
+
+.task-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.task-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.breakdown-section h3 {
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.priority-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.priority-label {
+  min-width: 80px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.priority-bar {
+  flex: 1;
+  height: 20px;
+  background: #e1e8ed;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.completed-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #27ae60, #2ecc71);
+  border-radius: 10px;
+}
+
+.priority-stats {
+  min-width: 60px;
+  text-align: right;
+  font-size: 12px;
+  color: #657786;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.status-label {
+  font-weight: 500;
+  color: #2c3e50;
+  text-transform: capitalize;
+}
+
+.status-count {
+  color: #1da1f2;
+  font-weight: bold;
+}
+
+/* Clients Tab */
+.clients-reports {
+  display: grid;
+  gap: 30px;
+}
+
+.client-acquisition {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.acquisition-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.acquisition-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+}
+
+.new-clients {
+  color: #1da1f2;
+  font-weight: bold;
+}
+
+.top-clients {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.clients-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.client-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+}
+
+.client-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-name {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.client-email {
+  font-size: 12px;
+  color: #657786;
+}
+
+.client-metrics {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.revenue {
+  font-weight: bold;
+  color: #27ae60;
+}
+
+.invoices {
+  font-size: 12px;
+  color: #657786;
+}
+
+.client-engagement {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.engagement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.engagement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+}
+
+.engagement-metrics {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  color: #657786;
+}
+
+/* Gamification Tab */
+.gamification-reports {
+  display: grid;
+  gap: 30px;
+}
+
+.leaderboard {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+}
+
+.rank {
+  font-weight: bold;
+  color: #f39c12;
+  min-width: 40px;
+}
+
+.user-email {
+  flex: 1;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.points {
+  color: #1da1f2;
+  font-weight: bold;
+  min-width: 100px;
+}
+
+.activities {
+  color: #657786;
+  font-size: 12px;
+  min-width: 80px;
+}
+
+.achievements {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.achievements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.achievement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e1e8ed;
+}
+
+.achievement-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.achievement-name {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.achievement-desc {
+  font-size: 12px;
+  color: #657786;
+}
+
+.unlocked-count {
+  color: #f39c12;
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reports-dashboard {
+    padding: 10px;
+  }
+
+  .reports-header {
+    padding: 15px;
+  }
+
+  .reports-tabs {
+    flex-wrap: wrap;
+  }
+
+  .reports-tabs button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top-performers {
+    grid-column: span 1;
+  }
+
+  .task-breakdown {
+    grid-template-columns: 1fr;
+  }
+
+  .sales-reports {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard-item,
+  .client-item,
+  .engagement-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .client-metrics,
+  .engagement-metrics {
+    align-items: flex-start;
+  }
+}

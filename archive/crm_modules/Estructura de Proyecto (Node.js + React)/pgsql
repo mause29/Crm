@@ -1,0 +1,27 @@
+crm-project/
+├─ backend/
+│  ├─ server.js
+│  ├─ routes/
+│  │  ├─ auth.js
+│  │  ├─ users.js
+│  │  ├─ tasks.js
+│  │  └─ dashboard.js
+│  ├─ controllers/
+│  ├─ models/
+│  └─ utils/
+├─ frontend/
+│  ├─ package.json
+│  ├─ src/
+│  │  ├─ App.js
+│  │  ├─ index.js
+│  │  ├─ components/
+│  │  │  ├─ Dashboard.js
+│  │  │  ├─ TaskBoard.js
+│  │  │  ├─ Notifications.js
+│  │  │  ├─ Widgets/
+│  │  │  └─ ThemeSwitcher.js
+│  │  ├─ context/
+│  │  │  └─ UserContext.js
+│  │  └─ utils/
+│  │     └─ shortcuts.js
+└─ README.md

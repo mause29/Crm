@@ -1,0 +1,76 @@
+# Security Dependencies for CRM System
+
+# Cryptography and Security
+cryptography==41.0.7
+bcrypt==4.0.1
+passlib[bcrypt]==1.7.4
+
+# Input Validation and Sanitization
+bleach==6.1.0
+pydantic[email]==2.5.2
+
+# Rate Limiting and Security Middleware
+slowapi==0.1.9
+python-multipart==0.0.6
+
+# Logging and Monitoring
+structlog==23.2.0
+
+# Additional Security Libraries
+pyjwt[crypto]==2.8.0
+python-jose[cryptography]==3.3.0
+
+# File Upload Security
+python-magic==0.4.27
+
+# Environment and Secrets Management
+python-dotenv==1.0.0
+
+# HTTP Security Headers
+secure==0.3.0
+
+# SQL Injection Prevention (additional layer)
+sqlparse==0.4.4
+
+# XSS Prevention (additional layer)
+beautifulsoup4==4.12.2
+
+# CSRF Protection
+itsdangerous==2.1.2
+
+# Security Testing and Validation
+bandit==1.7.6
+safety==2.3.5
+
+# API Security
+fastapi-security==0.8.0
+
+# Data Encryption at Rest
+fernet==1.0.1
+
+# Security Event Logging
+logging==0.4.9.6
+
+# Network Security
+requests[security]==2.31.0
+
+# SSL/TLS
+certifi==2023.11.17
+urllib3[secure]==2.1.0
+
+# Two-Factor Authentication
+pyotp==2.9.0
+qrcode==7.4.2
+
+# Security Monitoring
+watchtower==3.0.1
+
+# Input Validation
+email-validator==2.1.0
+phonenumbers==8.13.27
+
+# Password Validation
+zxcvbn==4.4.24
+
+# Security Headers for FastAPI
+fastapi-security-headers==0.1.0

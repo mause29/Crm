@@ -1,0 +1,11 @@
+# docker-compose.staging.yml
+version: "3.9"
+services:
+  crm-staging:
+    build: .
+    ports:
+      - "8080:3000"
+    environment:
+      NODE_ENV: staging
+    volumes:
+      - ./staging-data:/app/data
