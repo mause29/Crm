@@ -1,20 +1,20 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Float, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from .database_new import Base
+from app.database_new import Base
 
 class Company(Base):
     """
-    Modelo que representa una compañía en el sistema CRM.
+    Model that represents a company in the CRM system.
 
-    Una compañía puede tener múltiples usuarios y clientes asociados.
-    Se utiliza para segmentar datos por empresa en un entorno multi-tenant.
+    A company can have multiple users and clients associated.
+    Used to segment data by company in a multi-tenant environment.
 
     Attributes:
-        id (int): Identificador único de la compañía
-        name (str): Nombre de la compañía
-        users (relationship): Usuarios pertenecientes a esta compañía
-        clients (relationship): Clientes pertenecientes a esta compañía
+        id (int): Unique identifier of the company
+        name (str): Name of the company
+        users (relationship): Users belonging to this company
+        clients (relationship): Clients belonging to this company
     """
     __tablename__ = "companies"
     id = Column(Integer, primary_key=True, index=True)
@@ -24,21 +24,21 @@ class Company(Base):
 
 class User(Base):
     """
-    Modelo que representa un usuario del sistema CRM.
+    Model that represents a user in the CRM system.
 
-    Los usuarios pueden tener diferentes roles (user, admin, manager) y
-    pertenecen a una compañía específica.
+    Users can have different roles (user, admin, manager) and
+    belong to a specific company.
 
     Attributes:
-        id (int): Identificador único del usuario
-        name (str): Nombre completo del usuario
-        email (str): Correo electrónico único
-        hashed_password (str): Contraseña encriptada
-        role (str): Rol del usuario (user, admin, manager)
-        is_active (bool): Estado de activación de la cuenta
-        two_factor_secret (str): Secreto para autenticación de dos factores
-        created_at (datetime): Fecha de creación
-        company_id (int): ID de la compañía a la que pertenece
+        id (int): Unique identifier of the user
+        name (str): Full name of the user
+        email (str): Unique email address
+        hashed_password (str): Encrypted password
+        role (str): Role of the user (user, admin, manager)
+        is_active (bool): Account activation status
+        two_factor_secret (str): Secret for two-factor authentication
+        created_at (datetime): Creation date
+        company_id (int): ID of the company the user belongs to
     """
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -50,24 +50,23 @@ class User(Base):
     two_factor_secret = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)  # Index for date filtering
     company_id = Column(Integer, ForeignKey("companies.id"), index=True)  # Index for company filtering
-
 class Client(Base):
     """
-    Modelo que representa un cliente en el sistema CRM.
+    Model that represents a client in the CRM system.
 
-    Los clientes están asociados a una compañía y pueden tener
-    múltiples notas, oportunidades e facturas relacionadas.
+    Clients are associated with a company and can have
+    multiple notes, opportunities, and invoices related.
 
     Attributes:
-        id (int): Identificador único del cliente
-        name (str): Nombre del cliente
-        email (str): Correo electrónico del cliente
-        phone (str): Número de teléfono
-        company_id (int): ID de la compañía
-        created_by (int): ID del usuario que creó el cliente
-        created_at (datetime): Fecha de creación
-        notes (relationship): Notas asociadas al cliente
-        invoices (relationship): Facturas del cliente
+        id (int): Unique identifier of the client
+        name (str): Name of the client
+        email (str): Client's email address
+        phone (str): Phone number
+        company_id (int): ID of the company
+        created_by (int): ID of the user who created the client
+        created_at (datetime): Creation date
+        notes (relationship): Notes associated with the client
+        invoices (relationship): Invoices of the client
     """
     __tablename__ = "clients"
     id = Column(Integer, primary_key=True, index=True)
@@ -79,18 +78,17 @@ class Client(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     notes = relationship("Note", backref="client")
     invoices = relationship("Invoice", backref="client")
-
 class Note(Base):
     """
-    Modelo para notas asociadas a clientes.
+    Model for notes associated with clients.
 
-    Las notas permiten registrar información adicional sobre los clientes.
+    Notes allow registering additional information about clients.
 
     Attributes:
-        id (int): Identificador único de la nota
-        client_id (int): ID del cliente asociado
-        content (str): Contenido de la nota
-        created_at (datetime): Fecha de creación
+        id (int): Unique identifier of the note
+        client_id (int): ID of the associated client
+        content (str): Content of the note
+        created_at (datetime): Creation date
     """
     __tablename__ = "notes"
     id = Column(Integer, primary_key=True)

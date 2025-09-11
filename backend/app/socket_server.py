@@ -3,7 +3,7 @@ import socketio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins=['http://localhost:5173', 'http://localhost:5174'], cors_credentials=True)
+sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins=['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000', 'http://127.0.0.1:3000', 'https://localhost:3000', 'https://127.0.0.1:3000', 'http://localhost:8000'], cors_credentials=True)
 app = FastAPI()
 sio_app = socketio.ASGIApp(sio, other_asgi_app=app)
 
@@ -11,6 +11,10 @@ origins = [
     "http://localhost:5173",
     "http://localhost",
     "http://localhost:8000",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://localhost:3000",
+    "https://127.0.0.1:3000"
 ]
 
 app.add_middleware(

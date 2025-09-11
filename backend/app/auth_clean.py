@@ -8,7 +8,7 @@ import os
 import sys
 import logging
 from .database_new import get_db
-from .models import User
+from models import User
 
 # JWT Configuration
 SECRET_KEY = os.getenv("SECRET_KEY")

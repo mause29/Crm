@@ -6,8 +6,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
 from backend.app.main import app
 from backend.app.database import SessionLocal, Base, engine
-from backend.app.models import User
-from backend.app.utils import get_password_hash
+from backend.app.models import User, Company
+from backend.app.routes.users import get_password_hash
 
 client = TestClient(app)
 
@@ -21,32 +21,31 @@ def setup_database():
 
 @pytest.fixture(scope="module")
 def test_user():
-    # Create empresa and user for all tests
+    
     db = SessionLocal()
-    empresa = Empresa(nombre="Test Empresa")
+    empresa = Company(name="Test Empresa")
     db.add(empresa)
     db.commit()
     db.refresh(empresa)
-    
+
     hashed = get_password_hash("testpassword")
-    user = Usuario(
-        nombre="Test User",
+    user = User(
+        name="Test User",
         email="testuser@example.com",
         hashed_password=hashed,
-        rol="user",
-        empresa_id=empresa.id
+        role="user",
+        company_id=empresa.id
     )
     db.add(user)
     db.commit()
     db.close()
     return user
-
 def test_user_registration_and_login():
-    # First create an empresa
-    from backend.app.models import Empresa
+    
+    from backend.app.models import Company
     from backend.app.database import SessionLocal
     db = SessionLocal()
-    empresa = Empresa(nombre="Test Empresa")
+    empresa = Company(name="Test Empresa")
     db.add(empresa)
     db.commit()
     db.refresh(empresa)
@@ -71,7 +70,6 @@ def test_user_registration_and_login():
     })
     assert response.status_code == 200
     assert "access_token" in response.json()
-
 def test_create_cliente():
     # Login to get token
     response = client.post("/usuarios/token", data={

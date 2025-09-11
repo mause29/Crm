@@ -73,7 +73,7 @@ router = APIRouter(prefix="/users", tags=["users"])
             "content": {
                 "application/json": {
                     "example": {
-                        "msg": "User created successfully",
+                        "msg": "Usuario creado exitosamente",
                         "user_id": 1
                     }
                 }
@@ -84,7 +84,7 @@ router = APIRouter(prefix="/users", tags=["users"])
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "Email already registered"
+                        "detail": "Correo electrónico ya registrado"
                     }
                 }
             }
@@ -94,7 +94,7 @@ router = APIRouter(prefix="/users", tags=["users"])
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "Too many requests. Please try again later."
+                        "detail": "Demasiadas solicitudes. Por favor, inténtelo más tarde."
                     }
                 }
             }
@@ -102,13 +102,13 @@ router = APIRouter(prefix="/users", tags=["users"])
     }
 )
 def create_user(user: UserCreate, request: Request, db: Session = Depends(get_db)):
-    """Create a new user with comprehensive security validation"""
+    """Crear un nuevo usuario con validación de seguridad completa"""
     try:
         # Rate limiting check
         client_ip = request.client.host if request.client else "unknown"
         if not rate_limit_check(client_ip, max_requests=5, window_seconds=300):  # 5 requests per 5 minutes
-            log_security_event("RATE_LIMIT_EXCEEDED", {"endpoint": "/users/"}, ip_address=client_ip)
-            raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
+            log_security_event("RATE_LIMIT_EXCEEDED", {"endpoint": "/usuarios/"}, ip_address=client_ip)
+            raise HTTPException(status_code=429, detail="Demasiadas solicitudes. Por favor, inténtelo más tarde.")
 
         # Sanitize input data
         user_data = user.dict()
@@ -116,38 +116,38 @@ def create_user(user: UserCreate, request: Request, db: Session = Depends(get_db
 
         # Additional security validations
         if not validate_sql_injection_safe(sanitized_data.get('name', '')):
-            log_security_event("SQL_INJECTION_ATTEMPT", {"field": "name", "value": user.name}, ip_address=client_ip)
-            raise HTTPException(status_code=400, detail="Invalid characters in name")
+    
+            raise HTTPException(status_code=400, detail="Caracteres inválidos en el nombre")
 
         if not validate_xss_safe(sanitized_data.get('name', '')):
             log_security_event("XSS_ATTEMPT", {"field": "name", "value": user.name}, ip_address=client_ip)
-            raise HTTPException(status_code=400, detail="Invalid characters in name")
+            raise HTTPException(status_code=400, detail="Caracteres inválidos en el nombre")
 
         # Validate email domain if configured
         allowed_domains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com"]  # Add your allowed domains
         if not validate_email_domain(user.email, allowed_domains):
             log_security_event("INVALID_EMAIL_DOMAIN", {"email": user.email}, ip_address=client_ip)
-            raise HTTPException(status_code=400, detail="Email domain not allowed")
+            raise HTTPException(status_code=400, detail="Dominio de correo no permitido")
 
         # Enhanced password validation
         password_checks = validate_password_strength(user.password)
         if not password_checks['overall']:
-            missing_requirements = []
-            if not password_checks['length']: missing_requirements.append("at least 8 characters")
-            if not password_checks['uppercase']: missing_requirements.append("one uppercase letter")
-            if not password_checks['lowercase']: missing_requirements.append("one lowercase letter")
-            if not password_checks['digit']: missing_requirements.append("one number")
-            if not password_checks['special']: missing_requirements.append("one special character")
+    
+            if not password_checks['length']: missing_requirements.append("al menos 8 caracteres")
+            if not password_checks['uppercase']: missing_requirements.append("una letra mayúscula")
+            if not password_checks['lowercase']: missing_requirements.append("una letra minúscula")
+            if not password_checks['digit']: missing_requirements.append("un número")
+            if not password_checks['special']: missing_requirements.append("un carácter especial")
             raise HTTPException(
                 status_code=400,
-                detail=f"Password does not meet requirements: {', '.join(missing_requirements)}"
+                detail=f"La contraseña no cumple con los requisitos: {', '.join(missing_requirements)}"
             )
 
         # Check if email already exists
         existing_user = db.query(User).filter(User.email == user.email).first()
         if existing_user:
-            log_security_event("DUPLICATE_EMAIL_ATTEMPT", {"email": user.email}, ip_address=client_ip)
-            raise HTTPException(status_code=400, detail="Email already registered")
+            # Log successful user creation
+            raise HTTPException(status_code=400, detail="Correo electrónico ya registrado")
 
         # Create user with sanitized data
         hashed = get_password_hash(user.password)
@@ -162,28 +162,26 @@ def create_user(user: UserCreate, request: Request, db: Session = Depends(get_db
         db.commit()
         db.refresh(db_user)
         db.expunge(db_user)  # Detach instance from session to avoid "not bound to session" error
-
-        # Log successful user creation
-        log_accion(user.email, f"User account created: {user.email}", db)
+        log_accion(user.email, f"Cuenta de usuario creada: {user.email}", db)
         log_security_event("USER_CREATED", {"user_id": db_user.id, "email": user.email}, ip_address=client_ip)
 
-        return {"msg": "User created successfully", "user_id": db_user.id}
+        return {"msg": "Usuario creado exitosamente", "user_id": db_user.id}
 
     except IntegrityError as e:
         db.rollback()
         if "UNIQUE constraint failed" in str(e) or "email" in str(e).lower():
             log_security_event("DUPLICATE_EMAIL_ATTEMPT", {"email": user.email}, ip_address=client_ip)
-            raise HTTPException(status_code=400, detail="Email already registered")
+            raise HTTPException(status_code=400, detail="Correo electrónico ya registrado")
         else:
             log_security_event("DATABASE_CONSTRAINT_ERROR", {"error": str(e)}, ip_address=client_ip)
-            raise HTTPException(status_code=400, detail="User creation failed due to database constraint")
+            raise HTTPException(status_code=400, detail="Error de restricción de base de datos")
     except HTTPException:
         db.rollback()
         raise
     except Exception as e:
         db.rollback()
         log_security_event("USER_CREATION_ERROR", {"error": str(e)}, ip_address=client_ip)
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
 
 @router.post(
     "/token",
@@ -205,7 +203,7 @@ def create_user(user: UserCreate, request: Request, db: Session = Depends(get_db
 
     **Ejemplo de uso:**
     ```bash
-    curl -X POST "http://localhost:8000/users/token" \
+    curl -X POST "http://localhost:8000/usuarios/token" \
          -d "username=user@example.com&password=mypassword"
     ```
     """,
@@ -226,7 +224,7 @@ def create_user(user: UserCreate, request: Request, db: Session = Depends(get_db
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "Invalid email or password"
+                        "detail": "Correo electrónico o contraseña inválidos"
                     }
                 }
             }
@@ -241,31 +239,31 @@ def login(username: str = Form(...), password: str = Form(...), request: Request
         # Rate limiting for login attempts
         if not rate_limit_check(client_ip, max_requests=10, window_seconds=600):  # 10 attempts per 10 minutes
             log_security_event("LOGIN_RATE_LIMIT_EXCEEDED", {"username": username}, ip_address=client_ip)
-            raise HTTPException(status_code=429, detail="Too many login attempts. Please try again later.")
+            raise HTTPException(status_code=429, detail="Demasiados intentos de inicio de sesión. Por favor, inténtelo más tarde.")
 
         user = db.query(User).filter(User.email == username).first()
         if not user:
             log_security_event("FAILED_LOGIN", {"username": username, "reason": "user_not_found"}, ip_address=client_ip)
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+            raise HTTPException(status_code=401, detail="Correo electrónico o contraseña inválidos")
 
         if not verify_password(password, user.hashed_password):
             log_security_event("FAILED_LOGIN", {"username": username, "reason": "invalid_password"}, ip_address=client_ip)
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+            raise HTTPException(status_code=401, detail="Correo electrónico o contraseña inválidos")
 
         if not user.is_active:
             log_security_event("FAILED_LOGIN", {"username": username, "reason": "account_inactive"}, ip_address=client_ip)
-            raise HTTPException(status_code=401, detail="Account is deactivated")
+            raise HTTPException(status_code=401, detail="Cuenta desactivada")
 
         if user.two_factor_secret:
-    
             log_security_event("LOGIN_2FA_REQUIRED", {"username": username}, ip_address=client_ip)
             # Instead of raising HTTPException here, return a JSON response indicating 2FA required
-            return {"detail": "2FA required"}
+            return {"detail": "2FA requerido"}
+
         token = create_access_token({"sub": user.email})
 
         # Log successful login
         log_security_event("SUCCESSFUL_LOGIN", {"username": username}, ip_address=client_ip)
-        log_accion(user.email, "User logged in", db)
+        log_accion(user.email, "Usuario inició sesión", db)
 
         return {"access_token": token, "token_type": "bearer"}
 
@@ -273,7 +271,7 @@ def login(username: str = Form(...), password: str = Form(...), request: Request
         raise
     except Exception as e:
         log_security_event("LOGIN_ERROR", {"username": username, "error": str(e)}, ip_address=client_ip)
-        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al iniciar sesión: {str(e)}")
 
 @router.post("/token/2fa")
 def login_2fa(username: str = Form(...), code: str = Form(...), request: Request = None, db: Session = Depends(get_db)):
@@ -284,18 +282,18 @@ def login_2fa(username: str = Form(...), code: str = Form(...), request: Request
         user = db.query(User).filter(User.email == username).first()
         if not user or not user.two_factor_secret:
             log_security_event("INVALID_2FA_REQUEST", {"username": username}, ip_address=client_ip)
-            raise HTTPException(status_code=401, detail="Invalid authentication request")
+            raise HTTPException(status_code=401, detail="Solicitud de autenticación inválida")
 
         totp = pyotp.TOTP(user.two_factor_secret)
         if not totp.verify(code):
             log_security_event("INVALID_2FA_CODE", {"username": username}, ip_address=client_ip)
-            raise HTTPException(status_code=401, detail="Invalid 2FA code")
+            raise HTTPException(status_code=401, detail="Código 2FA inválido")
 
         token = create_access_token({"sub": user.email})
 
         # Log successful 2FA login
         log_security_event("SUCCESSFUL_2FA_LOGIN", {"username": username}, ip_address=client_ip)
-        log_accion(user.email, "User logged in with 2FA", db)
+        log_accion(user.email, "Usuario inició sesión con 2FA", db)
 
         return {"access_token": token, "token_type": "bearer"}
 
@@ -303,7 +301,7 @@ def login_2fa(username: str = Form(...), code: str = Form(...), request: Request
         raise
     except Exception as e:
         log_security_event("2FA_ERROR", {"username": username, "error": str(e)}, ip_address=client_ip)
-        raise HTTPException(status_code=500, detail=f"2FA verification failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error en verificación 2FA: {str(e)}")
 
 @router.post("/enable-2fa/{user_id}")
 def enable_2fa(user_id: int, request: Request = None, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -313,14 +311,14 @@ def enable_2fa(user_id: int, request: Request = None, db: Session = Depends(get_
 
         if user_id != current_user.id and current_user.role != "admin":
             log_security_event("UNAUTHORIZED_2FA_ENABLE", {"user_id": user_id, "current_user": current_user.id}, ip_address=client_ip)
-            raise HTTPException(status_code=403, detail="Not authorized to enable 2FA for this user")
+            raise HTTPException(status_code=403, detail="No autorizado para habilitar 2FA para este usuario")
 
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
         if user.two_factor_secret:
-            raise HTTPException(status_code=400, detail="2FA already enabled for this user")
+            raise HTTPException(status_code=400, detail="2FA ya habilitado para este usuario")
 
         secret = pyotp.random_base32()
         user.two_factor_secret = secret
@@ -331,7 +329,7 @@ def enable_2fa(user_id: int, request: Request = None, db: Session = Depends(get_
 
         # Log 2FA enable
         log_security_event("2FA_ENABLED", {"user_id": user_id, "enabled_by": current_user.id}, ip_address=client_ip)
-        log_accion(current_user.email, f"Enabled 2FA for user {user.email}", db)
+        log_accion(current_user.email, f"Habilitado 2FA para usuario {user.email}", db)
 
         return {"secret": secret, "uri": uri}
 
@@ -340,7 +338,7 @@ def enable_2fa(user_id: int, request: Request = None, db: Session = Depends(get_
     except Exception as e:
         db.rollback()
         log_security_event("2FA_ENABLE_ERROR", {"user_id": user_id, "error": str(e)}, ip_address=client_ip)
-        raise HTTPException(status_code=500, detail=f"Failed to enable 2FA: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al habilitar 2FA: {str(e)}")
 
 @router.get(
     "/",
@@ -388,9 +386,9 @@ def enable_2fa(user_id: int, request: Request = None, db: Session = Depends(get_
                                 "id": 1,
                                 "name": "Juan Pérez",
                                 "email": "juan.perez@empresa.com",
-                            "role": "admin",
-                            "is_active": True,
-                            "created_at": "2024-01-15T10:30:00Z"
+                                "role": "admin",
+                                "is_active": True,
+                                "created_at": "2024-01-15T10:30:00Z"
                             }
                         ],
                         "pagination": {
@@ -419,12 +417,12 @@ def get_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get paginated users list with caching (admin only)"""
+    """Obtener lista paginada de usuarios con caché (solo admin)"""
     try:
         client_ip = request.client.host if request and request.client else "unknown"
 
         if current_user.role != "admin":
-            raise HTTPException(status_code=403, detail="Admin access required")
+            raise HTTPException(status_code=403, detail="Se requiere acceso de administrador")
 
         # Construir consulta base
         query = db.query(User)
@@ -483,7 +481,7 @@ def get_users(
             "page": page,
             "per_page": per_page
         }, ip_address=client_ip)
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve users: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al obtener usuarios: {str(e)}")
 
 @router.get("/{user_id}")
 def get_user(user_id: int, request: Request = None, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -494,11 +492,11 @@ def get_user(user_id: int, request: Request = None, db: Session = Depends(get_db
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
             log_security_event("USER_NOT_FOUND", {"user_id": user_id, "current_user": current_user.id}, ip_address=client_ip)
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
         if user_id != current_user.id and current_user.role != "admin":
             log_security_event("UNAUTHORIZED_USER_ACCESS", {"user_id": user_id, "current_user": current_user.id}, ip_address=client_ip)
-            raise HTTPException(status_code=403, detail="Not authorized to view this user")
+            raise HTTPException(status_code=403, detail="No autorizado para ver este usuario")
 
         # Log access
         log_security_event("USER_ACCESSED", {"user_id": user_id, "current_user": current_user.id}, ip_address=client_ip)
@@ -516,4 +514,4 @@ def get_user(user_id: int, request: Request = None, db: Session = Depends(get_db
         raise
     except Exception as e:
         log_security_event("USER_ACCESS_ERROR", {"user_id": user_id, "current_user": current_user.id, "error": str(e)}, ip_address=client_ip)
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve user: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error al obtener usuario: {str(e)}")

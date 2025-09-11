@@ -11,8 +11,8 @@ from .models import User
 from .utils.security import log_security_event
 
 # JWT Configuration - Enhanced Security
-SECRET_KEY = os.getenv("SECRET_KEY", secrets.token_urlsafe(32))
-REFRESH_SECRET_KEY = os.getenv("REFRESH_SECRET_KEY", secrets.token_urlsafe(32))
+SECRET_KEY = "your_secret_key_here"
+REFRESH_SECRET_KEY = secrets.token_urlsafe(32)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
@@ -42,7 +42,7 @@ def create_refresh_token(data: dict):
     to_encode.update({"exp": expire, "type": "refresh"})
     encoded_jwt = jwt.encode(to_encode, REFRESH_SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
+        
 def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -51,14 +51,14 @@ def verify_token(token: str):
         if email is None or token_type != "access":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials",
+                detail="Credenciales de autenticación inválidas",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return email
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
+            detail="Credenciales de autenticación inválidas",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -71,14 +71,14 @@ def verify_refresh_token(token: str):
         if email is None or token_type != "refresh":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid refresh token",
+                detail="Token de actualización inválido",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return email
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token",
+            detail="Token de actualización inválido",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -91,21 +91,21 @@ def get_current_user(
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
+            detail="Usuario no encontrado",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
 
 def get_current_active_user(current_user: User = Depends(get_current_user)):
     if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=400, detail="Usuario inactivo")
     return current_user
 
 def get_current_user_optional(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
     db: Session = Depends(get_db)
 ) -> Optional[User]:
-    """Get current user if authenticated, otherwise return None"""
+    """Obtener usuario actual si está autenticado, de lo contrario retornar None"""
     if not credentials:
         return None
     try:

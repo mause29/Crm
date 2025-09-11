@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database_new import Base, engine
+from database_new import Base, engine
 from .routes import (
     users_paginated as users,  # Usar la versión optimizada con paginación
     clientes,
@@ -180,7 +180,7 @@ async def startup_event():
     start_scheduler()
 
     # Seed sample achievements
-    from .models import Achievement
+    from models import Achievement
     from sqlalchemy.orm import sessionmaker
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()

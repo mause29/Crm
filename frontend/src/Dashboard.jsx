@@ -28,11 +28,11 @@ const Dashboard = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [metricsRes, funnelRes, revenueRes, activityRes, kpisRes] = await Promise.all([
-        axios.get('http://127.0.0.1:8000/dashboard/metrics', { headers }),
-        axios.get('http://127.0.0.1:8000/dashboard/sales-funnel', { headers }),
-        axios.get('http://127.0.0.1:8000/dashboard/revenue-chart', { headers }),
-        axios.get('http://127.0.0.1:8000/dashboard/recent-activity', { headers }),
-        axios.get('http://127.0.0.1:8000/dashboard/performance-kpis', { headers })
+        axios.get('http://localhost:8000/dashboard/metrics', { headers }),
+        axios.get('http://localhost:8000/dashboard/sales-funnel', { headers }),
+        axios.get('http://localhost:8000/dashboard/revenue-chart', { headers }),
+        axios.get('http://localhost:8000/dashboard/recent-activity', { headers }),
+        axios.get('http://localhost:8000/dashboard/performance-kpis', { headers })
       ]);
 
       setMetrics(metricsRes.data);

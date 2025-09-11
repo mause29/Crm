@@ -1,8 +1,8 @@
 import smtplib
 from email.message import EmailMessage
 from sqlalchemy.orm import Session
-from .database_new import SessionLocal
-from .models import LogAuditoria
+from database_new import SessionLocal
+from models import LogAuditoria
 
 def log_accion(usuario: str, accion: str, db: Session = None):
     """Log user actions for auditing purposes"""
