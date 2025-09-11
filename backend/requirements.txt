@@ -27,3 +27,4 @@ qrcode>=7.4.2
 email-validator>=2.1.0
 phonenumbers>=8.13.27
 zxcvbn>=4.4.24
+schedule>=1.2.0

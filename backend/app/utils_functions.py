@@ -1,8 +1,8 @@
 import smtplib
 from email.message import EmailMessage
 from sqlalchemy.orm import Session
-from database_new import SessionLocal
-from models import LogAuditoria
+from .database_new import SessionLocal
+from .models import LogAuditoria
 
 def log_accion(usuario: str, accion: str, db: Session = None):
     """Log user actions for auditing purposes"""
@@ -107,7 +107,7 @@ def validate_email_format(email: str) -> bool:
     Pattern explanation:
     ^[a-zA-Z0-9._%+-]+  - Local part: alphanumeric, dots, underscores, percent, plus, hyphen
     @[a-zA-Z0-9.-]+     - Domain: alphanumeric, dots, hyphens
-    \.                  - Literal dot
+    \\.                  - Literal dot
     [a-zA-Z]{2,}       - TLD: at least 2 letters
     $
     """
