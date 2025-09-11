@@ -94,19 +94,32 @@ class MonitoringService:
         self.performance_monitor = PerformanceMonitor()
 
     def _background_monitor(self):
-        """Background monitoring thread"""
+        """Background monitoring thread with optimized intervals"""
+        system_counter = 0
+        business_counter = 0
+        alert_counter = 0
+
         while True:
             try:
-                # Collect system metrics every 30 seconds
-                self._collect_system_metrics()
+                current_time = time.time()
 
-                # Collect business metrics every 5 minutes
-                if int(time.time()) % 300 == 0:
+                # Collect system metrics every 60 seconds (reduced frequency)
+                system_counter += 1
+                if system_counter >= 2:  # 60 seconds with 30s sleep
+                    self._collect_system_metrics()
+                    system_counter = 0
+
+                # Collect business metrics every 10 minutes (reduced frequency)
+                business_counter += 1
+                if business_counter >= 20:  # 600 seconds with 30s sleep
                     self._collect_business_metrics()
+                    business_counter = 0
 
-                # Check for alerts every minute
-                if int(time.time()) % 60 == 0:
+                # Check for alerts every 2 minutes (reduced frequency)
+                alert_counter += 1
+                if alert_counter >= 4:  # 120 seconds with 30s sleep
                     self._check_alerts()
+                    alert_counter = 0
 
                 time.sleep(30)  # Sleep for 30 seconds
 
@@ -119,7 +132,7 @@ class MonitoringService:
         try:
             metrics = SystemMetrics(
                 timestamp=datetime.utcnow(),
-                cpu_percent=psutil.cpu_percent(interval=1),
+                cpu_percent=psutil.cpu_percent(interval=0.5),  # Reduced interval to minimize CPU usage
                 memory_percent=psutil.virtual_memory().percent,
                 disk_usage_percent=psutil.disk_usage('/').percent,
                 network_connections=len(psutil.net_connections()),
@@ -323,7 +336,7 @@ class MonitoringService:
         """Get comprehensive health status"""
         try:
             # System health
-            cpu_percent = psutil.cpu_percent()
+            cpu_percent = psutil.cpu_percent(interval=0.5)  # Reduced interval
             memory_percent = psutil.virtual_memory().percent
             disk_percent = psutil.disk_usage('/').percent
 

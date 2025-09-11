@@ -53,14 +53,19 @@ class PerformanceMonitor:
         return None
 
     def get_system_stats(self) -> Dict[str, Any]:
-        """Obtiene estadísticas del sistema."""
-        return {
-            "cpu_percent": psutil.cpu_percent(interval=1),
-            "memory_percent": psutil.virtual_memory().percent,
-            "disk_usage": psutil.disk_usage('/').percent,
-            "network_connections": len(psutil.net_connections()),
-        }
+        """Obtiene estadísticas del sistema con optimización de CPU."""
+        # Cache system stats to reduce CPU usage
+        current_time = time.time()
+        if not hasattr(self, '_last_system_stats_time') or current_time - self._last_system_stats_time > 5:
+        
+                "cpu_percent": psutil.cpu_percent(interval=0.5),  # Reduced interval
+                "memory_percent": psutil.virtual_memory().percent,
+                "disk_usage": psutil.disk_usage('/').percent,
+                "network_connections": len(psutil.net_connections()),
+            }
+            self._last_system_stats_time = current_time
 
+        return self._cached_system_stats
 # Instancia global del monitor
 performance_monitor = PerformanceMonitor()
 
